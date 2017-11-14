@@ -36,6 +36,6 @@
 			?>
 		</ul>
 		<div class="obfx_spinner"></div>
+		<div class="media-sidebar"></div>
 	</div>
-	<div class="media-sidebar"></div>
 </div>
