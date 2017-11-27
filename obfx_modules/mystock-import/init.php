@@ -235,21 +235,13 @@ class Mystock_Import_OBFX_Module extends Orbit_Fox_Module_Abstract {
 		 * Creating response for selected image
 		 */
 		$response = '<div class="attachment-details">';
-		$response .= '<form id="importmsp" method="post">';
-		$response .= '<h2>' . esc_html__( 'Attachement display settings', 'themeisle-companion' ) . '</h2><hr/>';
-		$response .= '<label class="attachement-settings">';
-		$response .= '<span class="name">' . esc_html__( 'Size', 'themeisle-companion' ) . '</span>';
-		$response .= '<select name="imagesizes">';
-		foreach ( $photo_sizes as $key => $label ) {
-			$response .= '<option value="' . esc_url( $photo[ $key ] ) . '">' . esc_html( $label ) . '</option>';
-		}
-		$response .= '</select>';
-		$response .= '</label>';
-
-		$response .= '<input type="submit" class="button obfx-import-media" value="Import media"/>';
-		$response .= '</form>';
-		$response .= '</div>';
+        $response .= '<form id="importmsp" method="post">';
+        $response .= '<input type="hidden" value="'. $photo['url_l'].'" name="imagesizes" />';
+        $response .= '<p>'.esc_html__( 'Click on the button below!', 'themeisle-companion' ).'</p>';
+        $response .= '</form>';
+        $response .= '</div>';
 		echo $response;
+		echo $photo['id'].'_'.$photo['secret'].'_b.jpg';
 		wp_die();
 	}
 

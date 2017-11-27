@@ -73,6 +73,8 @@
         showSpinner: function(container) {
             $(container).find('.obfx-image-list').addClass('obfx_loading');
             $(container).find('.obfx_spinner').show();
+            $(document).find('.media-button-insert').attr("disabled", "disabled");
+            $(document).find('.media-button-select').attr("disabled", "disabled");
         },
         hideSpinner: function(container) {
             $(container).find('.obfx-image-list').removeClass('obfx_loading');
@@ -90,6 +92,10 @@
                 success : function(response) {
                     container.html(response);
                     frame.infiniteScroll(container, frame);
+                    var btn_featured = 'Import & set featured image';
+                    $(document).find('.media-button-select').html(btn_featured);
+                    var btn_insert = 'Import & insert into post';
+                    $(document).find('.media-button-insert').html(btn_insert);
                 }
             });
         },
@@ -98,6 +104,10 @@
             $(document).on('click', '.obfx-image', function () {
                 $('.obfx-image').removeClass('selected details');
                 $(this).addClass('selected details');
+                $(document).find('.media-button-insert').removeAttr("disabled", "disabled");
+                $(document).find('.media-button-insert').attr("id", "i_insert");
+                $(document).find('.media-button-select').removeAttr("disabled", "disabled");
+                $(document).find('.media-button-select').attr("id", "i_featured");
             });
         },
 
@@ -106,6 +116,8 @@
                 e.stopPropagation();
                 $(this).parent().removeClass('selected details');
                 $('#obfx-mystock').find('.media-sidebar').html('');
+                $(document).find('.media-button-insert').attr("disabled", "disabled");
+                $(document).find('.media-button-select').attr("disabled", "disabled");
             });
         },
 
@@ -139,6 +151,7 @@
                                 imageList.append(response);
                             }
                             frame.hideSpinner(container);
+                            frame.deselectItem();
                         }
 
                     });
@@ -173,7 +186,32 @@
         },
 
         handleRequest : function () {
-            $(document).on('submit','#obfx-mystock #importmsp', function (e) {
+            $(document).on('click','#i_insert', function (e) {
+                var mediaContainer = $('#obfx-mystock').find('.media-sidebar');
+                $.ajax({
+                    type : 'POST',
+                    data : {
+                        'action': 'handle-request-' + mystock_import.slug,
+                        'formdata' : $('#importmsp').serialize(),
+                        'security' : mystock_import.nonce
+                    },
+                    url : mystock_import.ajaxurl,
+                    beforeSend : function () {
+                        var text = mystock_import.l10n.upload_image;
+                        var data = '<div class="attachement-loading"><h2>'+ text +'</h2><div class="spinner is-active"></div></div>';
+                        mediaContainer.html(data);
+                    },
+                    success : function() {
+                        var text = mystock_import.l10n.upload_image_complete;
+                        var data = '<div class="attachement-loading"><h2>'+ text +'</h2></div>';
+                        mediaContainer.html(data);
+                        wp.media.frame.content.get('library').collection.props.set({ '__ignore_force_update': (+ new Date()) });
+                        
+                    }
+                });
+                //e.preventDefault(); // avoid to execute the actual submit of the form.
+            });
+            $(document).on('click','#i_featured', function (e) {
                 var mediaContainer = $('#obfx-mystock').find('.media-sidebar');
                 $.ajax({
                     type : 'POST',
@@ -195,7 +233,7 @@
                         wp.media.frame.content.get('library').collection.props.set({ '__ignore_force_update': (+ new Date()) });
                     }
                 });
-                e.preventDefault(); // avoid to execute the actual submit of the form.
+                //e.preventDefault(); // avoid to execute the actual submit of the form.
             });
         }
     });
